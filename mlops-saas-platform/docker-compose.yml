@@ -1,0 +1,71 @@
+version: '3.8'
+
+services:
+  # Redis service for Celery message brokering
+  redis:
+    image: redis:7.2-alpine
+    ports:
+      - "6379:6379"
+    networks:
+      - saas-network
+    volumes:
+      - redis_data:/data
+
+  # PostgreSQL database service
+  db:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_DB: saasdb
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    networks:
+      - saas-network
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      #- ./init.sql:/docker-entrypoint-initdb.d/init.sql # Optional for initial SQL
+
+  # Main FastAPI application
+  app:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=postgresql://postgres:postgres@db:5432/saasdb
+      - REDIS_URL=redis://redis:6379/0
+    depends_on:
+      - db
+      - redis
+    volumes:
+      - .:/app # Mounts our code into the container for live development
+    networks:
+      - saas-network
+
+  # Celery worker for background job processing
+  worker:
+    build: .
+    command: celery -A app.celery_worker.celery_app worker --loglevel=info
+    environment:
+      - DATABASE_URL=postgresql://postgres:postgres@db:5432/saasdb
+      - REDIS_URL=redis://redis:6379/0
+      - REDDIT_CLIENT_ID=I_FxBsGYRtj1-chbT0JdAg
+      - REDDIT_CLIENT_SECRET=bYeBvu9S-fvsQbdq7O-6iQQR4VAWtw
+      - REDDIT_USER_AGENT=mlops-saas-platform by /u/your_reddit_username
+    depends_on:
+      - db
+      - redis
+    volumes:
+      - .:/app
+    networks:
+      - saas-network
+
+# Define volumes to persist data
+volumes:
+  postgres_data:
+  redis_data:
+
+# Define a network for all services to communicate
+networks:
+  saas-network:
+    driver: bridge

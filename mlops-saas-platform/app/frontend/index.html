@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ML Data Collection Platform</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-robot"></i> ML Data Collection Platform</h1>
+            <p>Extract clean, structured data from web sources for machine learning</p>
+        </header>
+
+        <div class="main-content">
+            <!-- Job Submission Form -->
+            <div class="card">
+                <h2><i class="fas fa-plus-circle"></i> Submit New URL</h2>
+                <form id="jobForm">
+                    <div class="form-group">
+                        <label for="url">URL to Scrape:</label>
+                        <input type="url" id="url" name="url" 
+                               placeholder="https://example.com/article" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="sourceType">Source Type:</label>
+                        <select id="sourceType" name="sourceType">
+                            <option value="">Auto-detect</option>
+                            <option value="NEWS">News Article</option>
+                            <option value="TWITTER">Twitter/X Post</option>
+                            <option value="REDDIT">Reddit Post</option>
+                        </select>
+                    </div>
+                    
+                    <button type="submit" id="submitBtn">
+                        <i class="fas fa-paper-plane"></i> Submit Job
+                    </button>
+                </form>
+                
+                <!-- Status message area -->
+                <div id="statusMessage" style="display: none; margin-top: 15px; padding: 10px; border-radius: 5px;"></div>
+            </div>
+
+            <!-- Active Jobs List -->
+            <div class="card">
+                <h2><i class="fas fa-tasks"></i> Active Jobs</h2>
+                <div id="jobsList" class="jobs-list">
+                    <div class="empty-state">
+                        <i class="fas fa-inbox"></i>
+                        <p>No active jobs. Submit a URL to get started!</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Job Details Modal -->
+            <div id="jobModal" class="modal">
+                <div class="modal-content">
+                    <span class="close">&times;</span>
+                    <h2>Job Details</h2>
+                    <div id="jobDetails"></div>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <p>Powered by FastAPI & Celery | MLOps SaaS Platform</p>
+        </footer>
+    </div>
+
+    <script src="/static/script.js"></script>
+</body>
+</html>
