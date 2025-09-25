@@ -13,37 +13,6 @@ This system allows you to submit URLs from various websites and receive clean, s
 
 ## System Architecture
 
-┌─────────────────┐    ┌──────────────────┐    ┌─────────────────┐
-│   User Browser  │    │   FastAPI Server │    │  PostgreSQL DB  │
-│                 │    │   (Python)       │    │   (Jobs Table)  │
-│ - Submit URL    │◄──►│ - REST API       │◄──►│ - Job metadata  │
-│ - View Results  │    │ - Validation     │    │ - Status tracking│
-└─────────────────┘    └──────────────────┘    └─────────────────┘
-         │                       │                       │
-         │                       │                       │
-         │              ┌────────┴────────┐              │
-         │              │                 │              │
-         │        ┌─────▼─────┐    ┌─────▼─────┐         │
-         │        │  Redis    │    │ Celery    │         │
-         │        │  Queue    │    │  Workers  │         │
-         │        │           │    │ (Python)  │         │
-         │        └─────┬─────┘    └─────┬─────┘         │
-         │              │                 │              │
-         │              └─────┬─────┬─────┘              │
-         │                    │     │                    │
-         │              ┌─────▼─────▼─────┐              │
-         │              │   Scrapers      │              │
-         │              │   (Python)      │              │
-         │              └─────┬─────┬─────┘              │
-         │                    │     │                    │
-┌─────────────────┐    ┌─────▼─────▼─────┐    ┌─────────▼────────┐
-│   External      │    │  PostgreSQL DB  │    │   FastAPI Server │
-│   Sources       │    │ (Scraped Data)  │    │   (Response)     │
-│ - News sites    │◄──►│ - Clean text    │◄──►│ - Return results │
-│ - Twitter/X     │    │ - Metadata      │    │ - JSON format    │
-│ - Reddit        │    │ - ML-ready      │    └──────────────────┘
-└─────────────────┘    └─────────────────┘
-
 1-Start with User Input: "Users submit URLs through a web interface"
 
 2- API Layer: "FastAPI validates the input and creates a job record"
